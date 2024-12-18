@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LiDAR and Ultrasonic Maps</title>
+  <style>
+    /* Set the background image and make it cover the screen */
+    body {
+      background-image: url('https://pic4.zhimg.com/v2-e3ba83edf568b6140318d84eb156be5b_r.jpg');
+      background-size: cover;
+      background-position: center;
+      color: rgba(255, 255, 255, 0.7); /* White text with transparency */
+      text-align: center;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: space-between; /* Space between radar and lidar */
+      padding: 20px;
+    }
+
+    h1 {
+      color: rgba(0, 255, 0, 0.7); /* Green with transparency */
+    }
+
+    h2 {
+      color: rgba(255, 255, 255, 0.7); /* White with transparency */
+    }
+
+    canvas {
+      border: 1px solid rgba(0, 255, 0, 0.7); /* Green border with transparency */
+      margin: 20px;
+      display: inline-block;
+      opacity: 0.8; /* Transparency for the canvas elements */
+    }
+
+    .sensor-data {
+      margin-top: 20px;
+      color: rgba(255, 255, 255, 0.7); /* White text with transparency */
+    }
+
+    .sensor-info {
+      margin: 5px 0;
+    }
+
+    /* Style for the section holding the canvas */
+    .maps-container {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>LiDAR and Ultrasonic Maps</h1>
+
+  <!-- Maps container -->
+  <div class="maps-container">
+    <!-- Radar Canvas (Left) -->
+    <div>
+      <h2>Radar Map</h2>
+      <canvas id="radarCanvas" width="400" height="400"></canvas>
+    </div>
+
+    <!-- LiDAR Canvas (Right) -->
+    <div>
+      <h2>LiDAR Map</h2>
+      <canvas id="lidarCanvas" width="400" height="400"></canvas>
+    </div>
+  </div>
+
+  <!-- Sensor Data Display -->
+  <div class="sensor-data">
+    <div class="sensor-info" id="lidar-distance">LiDAR Detected Object Distance: N/A</div>
+    <div class="sensor-info" id="lidar-speed">LiDAR Detected Object Speed: N/A</div>
+    <div class="sensor-info" id="radar-distance">Radar Detected Object Distance: N/A</div>
+    <div class="sensor-info" id="radar-speed">Radar Detected Object Speed: N/A</div>
+  </div>
+
+ 
+
+    /
+  </script>
+
+  <!-- LiDAR Map and Logic -->
+  <script>
+    // Get LiDAR canvas and context
+    const lidarCanvas = document.getElementById('lidarCanvas');
+    const lidarCtx = lidarCanvas.getContext('2d');
+    
+    // Get Radar canvas and context
+    const radarCanvas = document.getElementById('radarCanvas');
+    const radarCtx = radarCanvas.getContext('2d');
+    
+    const lidarRadius = 180;
+    const radarRadius = 180;
+    const rotationIncrement = Math.PI / 180; // Control the angle increment for smoother rotation
+    let lidarAngle = 0; // Starting angle for LiDAR ray
+    let radarAngle = 0; // Starting angle for Radar ray
+
+    // Function to draw rotating ray (simulating sensor scanning)
+    function drawRotatingRay(angle, distance, ctx, canvas, radius) {
+      const x0 = canvas.width / 2;
+      const y0 = canvas.height / 2;
+      
+      const x1 = x0 + distance * Math.cos(angle);
+      const y1 = y0 + distance * Math.sin(angle);
+
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      ctx.lineTo(x1, y1);
+      ctx.strokeStyle = "#00ff00";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // Function to draw LiDAR Map
+    function drawLidar() {
+      lidarCtx.clearRect(0, 0, lidarCanvas.width, lidarCanvas.height);
+      lidarCtx.beginPath();
+      lidarCtx.arc(200, 200, lidarRadius, 0, 2 * Math.PI); // LiDAR Circular Field of View
+      lidarCtx.strokeStyle = "#00ff00";
+      lidarCtx.stroke();
+      
+      // Draw rotating rays for LiDAR
+      for (let i = 0; i < 5; i++) {
+        let distance = Math.random() * lidarRadius;
+        drawRotatingRay(lidarAngle + (i * Math.PI / 5), distance, lidarCtx, lidarCanvas, lidarRadius);
+      }
+
+      // Simulate LiDAR detected objects
+      for (let i = 0; i < 5; i++) {
+        let angle = Math.random() * 2 * Math.PI;
+        let distance = Math.random() * lidarRadius;
+        let x = 200 + distance * Math.cos(angle);
+        let y = 200 + distance * Math.sin(angle);
+        lidarCtx.fillStyle = "#ff0000";
+        lidarCtx.fillRect(x - 5, y - 5, 10, 10);
+
+        // Simulated LiDAR object data
+        const lidarDistance = distance.toFixed(2);
+        const lidarSpeed = (Math.random() * 2).toFixed(2); // Random speed for demo
+
+        document.getElementById('lidar-distance').innerText = `LiDAR Detected Object Distance: ${lidarDistance} meters`;
+        document.getElementById('lidar-speed').innerText = `LiDAR Detected Object Speed: ${lidarSpeed} m/s`;
+      }
+
+      lidarAngle += rotationIncrement; // Rotate ray angle
+    }
+
+    // Function to draw Radar Map
+    function drawRadar() {
+      radarCtx.clearRect(0, 0, radarCanvas.width, radarCanvas.height);
+      radarCtx.beginPath();
+      radarCtx.arc(200, 200, radarRadius, 0, 2 * Math.PI); // Radar Circular Field of View
+      radarCtx.strokeStyle = "#ff9900";
+      radarCtx.stroke();
+
+      // Draw rotating rays for Radar
+      for (let i = 0; i < 3; i++) {
+        let distance = Math.random() * radarRadius;
+        drawRotatingRay(radarAngle + (i * Math.PI / 5), distance, radarCtx, radarCanvas, radarRadius);
+      }
+
+      // Simulate Radar sensor detection
+      for (let i = 0; i < 3; i++) {
+        let angle = Math.random() * 2 * Math.PI;
+        let distance = Math.random() * radarRadius;
+        let x = 200 + distance * Math.cos(angle);
+        let y = 200 + distance * Math.sin(angle);
+        radarCtx.fillStyle = "#00ff00";
+        radarCtx.fillRect(x - 5, y - 5, 10, 10);
+
+        // Simulated Radar object data
+        const radarDistance = distance.toFixed(2);
+        const radarSpeed = (Math.random() * 2).toFixed(2); // Random speed for demo
+
+        document.getElementById('radar-distance').innerText = `Radar Detected Object Distance: ${radarDistance} meters`;
+        document.getElementById('radar-speed').innerText = `Radar Detected Object Speed: ${radarSpeed} m/s`;
+      }
+
+      radarAngle += rotationIncrement; // Rotate ray angle
+    }
+
+    // Call functions to draw LiDAR and Radar Maps
+    setInterval(() => {
+      drawLidar();
+      drawRadar();
+    }, 100); // Refresh every 100ms
+  </script>
+</body>
+</html>

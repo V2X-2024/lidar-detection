@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Media Control & Hidden Object Detection</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: url('https://www.photo-paysage.com/albums/automne/automne-10.jpg') no-repeat center center fixed;
+      background-size: cover;
+      text-align: center;
+    }
+    h1 {
+      color: #00ff00;
+      margin-top: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+    h2 {
+      color: #ffffff;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    }
+    button {
+      background-color: #00ff00;
+      border: none;
+      color: black;
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #00cc00;
+    }
+    video, audio, iframe {
+      display: block;
+      margin: 10px auto;
+      width: 80%;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <h1>Media Control & Hidden Object Detection</h1>
+
+  <!-- Media Controls -->
+  <h2>Video Controls</h2>
+  <button id="play-video">Play Video</button>
+  <button id="pause-video">Pause Video</button>
+
+  <h2>Radio Controls</h2>
+  <button id="play-radio">Play Radio</button>
+  <button id="pause-radio">Pause Radio</button>
+
+  <h2>YouTube Controls</h2>
+  <button id="play-youtube">Play YouTube</button>
+  <button id="pause-youtube">Pause YouTube</button>
+
+  <!-- File Uploads -->
+  <h2>Upload Files</h2>
+  <label>Upload Music: <input type="file" id="music-file" accept="audio/*"></label><br>
+  <label>Upload Video: <input type="file" id="video-file" accept="video/*"></label>
+
+  <!-- Media Players -->
+  <video id="video-player" controls></video>
+  <audio id="radio-player" controls>
+    <source src="https://stream.live.vc.bbcmedia.co.uk/bbc_radio_one" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+  <iframe id="youtube-video" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+
+  <!-- Hidden Object Detection -->
+  <h2>Hidden Object Detection</h2>
+  <button id="hidden-object">Simulate Hidden Object Detection</button>
+
+  <script>
+    // JavaScript for media controls and alerts
+    const videoPlayer = document.getElementById('video-player');
+    const radioPlayer = document.getElementById('radio-player');
+    const youtubeVideo = document.getElementById('youtube-video');
+    let lastPlayedMedia = null;
+
+    document.getElementById('play-video').addEventListener("click", () => {
+      videoPlayer.play();
+      lastPlayedMedia = videoPlayer;
+      console.log("Video playing...");
+    });
+    document.getElementById('pause-video').addEventListener("click", () => {
+      videoPlayer.pause();
+      console.log("Video paused...");
+    });
+
+    document.getElementById('play-radio').addEventListener("click", () => {
+      radioPlayer.play();
+      lastPlayedMedia = radioPlayer;
+      console.log("Radio playing...");
+    });
+    document.getElementById('pause-radio').addEventListener("click", () => {
+      radioPlayer.pause();
+      console.log("Radio paused...");
+    });
+
+    document.getElementById('play-youtube').addEventListener("click", () => {
+      youtubeVideo.src = "https://www.youtube.com/embed/dQw4w9WgXcQ";
+      lastPlayedMedia = youtubeVideo;
+      console.log("YouTube video playing...");
+    });
+    document.getElementById('pause-youtube').addEventListener("click", () => {
+      youtubeVideo.src = "";
+      console.log("YouTube video paused...");
+    });
+  // File Upload Events
+  document.getElementById('music-file').addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        radioPlayer.src = URL.createObjectURL(file);
+        console.log(`Loaded music file: ${file.name}`);
+      }
+    });
+    document.getElementById('video-file').addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        videoPlayer.src = URL.createObjectURL(file);
+        console.log(`Loaded video file: ${file.name}`);
+      }
+    });
+
+    document.getElementById('hidden-object').addEventListener("click", () => {
+      if (lastPlayedMedia && !lastPlayedMedia.paused) {
+        lastPlayedMedia.pause();
+      }
+      setTimeout(() => {
+        if (lastPlayedMedia) {
+          lastPlayedMedia.play();
+        }
+      }, 3000);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GPS Maps & V2X Simulation</title>
+  <style>
+    body { 
+      background-image: url('https://geospatialmedia.s3.amazonaws.com/wp-content/uploads/2018/05/SmartCity1-768x432.jpg'); 
+      background-size: cover;
+      background-position: center;
+      color: white; 
+      text-align: center; 
+      font-family: Arial, sans-serif; 
+    }
+
+    h1 { 
+      color: #00ff00; 
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Shadow for better readability */
+      opacity: 0.9; /* Slight transparency */
+    }
+
+    .button-container {
+      margin: 10px;
+      opacity: 0.9; /* Less transparency for buttons */
+    }
+
+    button {
+      background-color: rgba(0, 255, 0, 0.8); /* Slightly more opaque button */
+      border: none; 
+      color: black; 
+      padding: 10px 20px; 
+      margin: 5px; 
+      font-size: 16px; 
+      cursor: pointer; 
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: rgba(0, 204, 0, 0.9);
+    }
+
+    #map { 
+      height: 500px; 
+      margin: 20px auto; 
+      width: 80%; 
+      opacity: 1; /* No transparency for the map */
+    }
+  </style>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+  <h1>GPS Maps & V2X Simulation</h1>
+
+  <!-- Buttons to navigate to different states -->
+  <div class="button-container">
+    <button onclick="goToLocation('Setif')">Setif State</button>
+    <button onclick="goToLocation('Constantine')">Constantine State</button>
+    <button onclick="goToLocation('Oran')">Oran State</button>
+    <button onclick="goToLocation('SoukElThenine')">Souk El-Thenine Municipality (Bejaia)</button>
+    <button onclick="goToLocation('Algiers')">Algiers State</button>
+    <button onclick="goToLocation('Bejaia')">Bejaia State</button>
+  </div>
+
+  <div id="map"></div>
+
+  <script>
+    // Initialize the map
+    var map = L.map('map').setView([36.6405, 5.2893], 13); // Souk El-Thenine, Bejaia
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Locations for different states
+    const locations = {
+      Setif: { lat: 36.19, lng: 5.41, zoom: 12 },
+      Constantine: { lat: 36.36, lng: 6.78, zoom: 12 },
+      Oran: { lat: 35.70, lng: -0.62, zoom: 12 },
+      SoukElThenine: { lat: 36.6405, lng: 5.2893, zoom: 13 },
+      Algiers: { lat: 36.75, lng: 3.06, zoom: 13 },
+      Bejaia: { lat: 36.75, lng: 5.06, zoom: 13 }
+    };
+
+    // Function to navigate to the selected location
+    function goToLocation(state) {
+      if (locations[state]) {
+        const { lat, lng, zoom } = locations[state];
+        map.setView([lat, lng], zoom);
+      }
+    }
+
+    // Vehicle data
+    var vehicles = [
+      { id: 1, lat: 36.6405, lng: 5.2893, marker: null }, // Bejaia
+      { id: 2, lat: 36.6450, lng: 5.2870, marker: null }, // Nearby Bejaia
+      { id: 3, lat: 36.1911, lng: 5.4137, marker: null }, // Setif
+      { id: 4, lat: 36.2000, lng: 5.4000, marker: null }  // Nearby Setif
+    ];
+
+    // Add markers for each vehicle
+    vehicles.forEach(function(vehicle) {
+      vehicle.marker = L.marker([vehicle.lat, vehicle.lng]).addTo(map)
+        .bindPopup("Vehicle " + vehicle.id + " Location").openPopup();
+    });
+
+    // Update vehicle location with simulated movement
+    function updateVehicleLocation(vehicle, newLat, newLng) {
+      vehicle.lat = newLat;
+      vehicle.lng = newLng;
+      vehicle.marker.setLatLng([newLat, newLng]).update();
+    }
+
+    // Simulate vehicle movement and proximity detection every 3 seconds
+    setInterval(function() {
+      vehicles.forEach(function(vehicle) {
+        var newLat = vehicle.lat + (Math.random() - 0.5) * 0.01;
+        var newLng = vehicle.lng + (Math.random() - 0.5) * 0.01;
+        updateVehicleLocation(vehicle, newLat, newLng);
+      });
+    }, 3000);
+  </script>
+</body>
+</html>
+

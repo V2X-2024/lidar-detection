@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V2X Alerts</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+    .background {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: url('https://images.hgmsites.net/hug/vehicle-to-vehicle-v2v-and-vehicle-to-infrastructure-v2i-communications_100674105_h.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+    .content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    h1 {
+      color: #ff0000;
+      font-size: 3rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* لتحسين وضوح النص */
+    }
+    .sensor-data {
+      padding: 15px;
+      display: inline-block;
+    }
+    .sensor-data div {
+      margin: 5px 0;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); /* لتحسين وضوح النص */
+    }
+  </style>
+</head>
+<body>
+  <div class="background">
+    <div class="content">
+      <h1>V2X Alerts</h1>
+      <div class="sensor-data" id="sensorData">
+        <div id="alertMessage">Fetching data...</div>
+        <div id="humidity">Humidity: --</div>
+        <div id="temperature">Temperature: --</div>
+        <div id="radar">Radar: No objects detected</div>
+        <div id="ultrasonic">Ultrasonic: No objects detected</div>
+        <div id="lidar">LiDAR: No objects detected</div>
+        <div id="wifi">WiFi/Bluetooth Devices: --</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+ 
+
+    
+
+    // Fetch data and update UI in real-time
+    onValue(v2xRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        // Update the alert message based on sensor readings
+        const radarAlert = data.Sensors.Radar.Alert;
+        const ultrasonicAlert = data.Sensors.Ultrasonic.Alert;
+        const lidarAlert = data.Sensors.LiDAR.DetectedObjects.length > 0 ? 
+          "Objects detected by LiDAR" : 
+          "No objects detected";
+
+        // Set alert message
+        const alertMessage = radarAlert !== "No objects detected" 
+          ? radarAlert 
+          : ultrasonicAlert !== "No objects detected"
+            ? ultrasonicAlert
+            : lidarAlert;
+
+        document.getElementById("alertMessage").innerText = `ALERT: ${alertMessage}`;
+
+        // Update sensor data section
+        document.getElementById("humidity").innerText = `Humidity: ${data.Sensors.Humidity.Humidity}%`;
+        document.getElementById("temperature").innerText = `Temperature: ${data.Sensors.Humidity.Temperature}°C`;
+        document.getElementById("radar").innerText = `Radar: ${data.Sensors.Radar.Alert}`;
+        document.getElementById("ultrasonic").innerText = `Ultrasonic: ${data.Sensors.Ultrasonic.Alert}`;
+        document.getElementById("lidar").innerText = `LiDAR: ${lidarAlert}`;
+        document.getElementById("wifi").innerText = `WiFi/Bluetooth Devices: ${data.Sensors.WiFi_Bluetooth.DetectedDevices.map(device => device.DeviceName).join(", ")}`;
+      } else {
+        document.getElementById("alertMessage").innerText = "No data available.";
+      }
+    });
+  </script>
+</body>
+</html>
+

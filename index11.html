@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IoV Control Panel</title>
+  <style>
+    body {
+      background-image: url('https://static.wixstatic.com/media/1ebe62_9fcb81b4a35340b8ba0660d3e961d9f6~mv2.jpg/v1/fit/w_1000%2Ch_697%2Cal_c%2Cq_80/file.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: white;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 { color: #00ff00; }
+    .menu-container { display: flex; flex-wrap: wrap; justify-content: center; }
+    .menu-item {
+      width: 200px;
+      margin: 10px;
+      border: 2px solid #00ff00;
+      border-radius: 5px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .menu-item img { width: 100%; border-radius: 5px; }
+    .status { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>IoV Control Panel</h1>
+  <h2>My Car is Protected</h2>
+  <div class="menu-container">
+    <div class="menu-item" onclick="openSection('GPS11')">
+      <img src="\downloads\V2X\GPS.png" alt="GPS Maps">
+      <p>GPS Maps</p>
+    </div>
+    <div class="menu-item" onclick="openSection('Alerts11')">
+      <img src="\downloads\V2X\alerts.png" alt="Alerts">
+      <p>Alerts</p>
+    </div>
+  
+    <div class="menu-item" onclick="openSection('media11')">
+      <img src="\downloads\V2X\media.png" alt="Media">
+      <p>Music & Video</p>
+    </div>
+    <div class="menu-item" onclick="openSection('lidar')">
+      <img src="\downloads\V2X\lidar.png" alt="lidar">
+      <p>LiDAR Map</p>
+    </div>
+  </div>
+  <div class="status"><strong><FONT COLOR="#00ff00">Status: Connected to IoV System</div></strong></FONT>
+
+  <script>
+    function openSection(section) {
+      window.location.href = section + ".html";
+    }
+  </script>
+
+  <!-- Contact Information Section -->
+  <div class="contact-info">
+    <h3><strong><FONT COLOR="#00ff00">Project Details:</h3></strong></FONT>
+    <p><strong><FONT COLOR="#00ff00">Project Name: Vehicle Safety and Monitoring System</p></strong></FONT COLOR>
+    <p><strong><FONT COLOR="#00ff00">IP Address: <span id="ip-address">Loading...</span></p></strong></FONT COLOR>
+    <p><strong><FONT COLOR="#00ff00">Wi-Fi Network: OPPO A12</p></strong></FONT COLOR>
+    <p><strong><FONT COLOR="#00ff00">SIM Card: GSM Ready: <span id="gsm-status">Checking...</span></p></strong></FONT COLOR>
+    <p><strong><FONT COLOR="#00ff00">Contact: +213792453878</p></strong></FONT COLOR>
+  </div>
+
+  <!-- Alert Status Section -->
+  <div class="alert-status">
+    <h3><strong><FONT COLOR="#00ff00">Alert Status:</h3></strong></FONT COLOR>
+    <p id="alert-message"><strong><FONT COLOR="#00ff00">No alerts currently.</p></strong></FONT COLOR>
+  </div>
+
+  <script>
+    // Update the IP Address dynamically
+    fetch('http://192.168.4.1')  // Update with the actual IP address or local server
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("ip-address").innerText = data.ip || "N/A";
+      })
+      .catch(error => {
+        console.error('Error fetching IP address:', error);
+      });
+// Replace with the IP address of your ESP32
+const ESP32_IP = 'http://192.168.4.1/data';  // Use the IP printed in Serial Monitor
+
+// Function to fetch data from ESP32
+function fetchData() {
+    fetch(ESP32_IP)
+        .then(response => response.json())  // Parse the JSON response
+        .then(data => {
+            // Update the page with the fetched data
+            const dataContainer = document.getElementById('dataContainer');
+            dataContainer.innerHTML = `
+                <p>Latitude: ${data.latitude}</p>
+                <p>Longitude: ${data.longitude}</p>
+                <p>Lidar Distance: ${data.lidarDistance} meters</p>
+                <p>Network Detected: ${data.networkDetected}</p>
+                <p>Radar Detected: ${data.radarDetected}</p>
+            `;
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
+        });
+}
+
+// Fetch data every 5 seconds
+setInterval(fetchData, 5000);
+
+// Fetch data initially
+fetchData();
+    // Update GSM status dynamically
+    function updateGSMStatus(status) {
+      document.getElementById("gsm-status").innerText = status;
+    }
+
+    // Function to update alert message
+    function updateAlertMessage(message) {
+      document.getElementById("alert-message").innerText = message;
+    }
+
+    // Simulate receiving alerts from Arduino (you can replace this with actual data from the server)
+    setInterval(() => {
+      // Simulating network and radar detection
+       let alertMessage = "Hidden object detected near (34.0522, -118.2437)";
+      updateAlertMessage(alertMessage);
+      updateGSMStatus("Ready");
+      // Triggering media control based on the alert
+      controlMedia(true);  // Pause media on alert
+      setTimeout(() => {
+        controlMedia(false);  // Resume media after the alert
+      }, 5000);
+    }, 10000);  // Simulate an alert every 10 seconds
+  </script>
+</body>
+</html>
