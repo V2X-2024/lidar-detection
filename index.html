@@ -65,10 +65,9 @@
   <div class="contact-info">
     <h3><strong><FONT COLOR="#00ff00">Project Details:</h3></strong></FONT>
     <p><strong><FONT COLOR="#00ff00">Project Name: Vehicle Safety and Monitoring System</p></strong></FONT COLOR>
-    <p><strong><FONT COLOR="#00ff00">IP Address: <span id="ip-address">Loading...</span></p></strong></FONT COLOR>
     <p><strong><FONT COLOR="#00ff00">Wi-Fi Network: OPPO A12</p></strong></FONT COLOR>
     <p><strong><FONT COLOR="#00ff00">SIM Card: GSM Ready: <span id="gsm-status">Checking...</span></p></strong></FONT COLOR>
-    <p><strong><FONT COLOR="#00ff00">Contact: +213792453878</p></strong></FONT COLOR>
+    
   </div>
 
   <!-- Alert Status Section -->
@@ -128,9 +127,9 @@ fetchData();
     // Simulate receiving alerts from Arduino (you can replace this with actual data from the server)
     setInterval(() => {
       // Simulating network and radar detection
-       let alertMessage = "Hidden object detected near (34.0522, -118.2437)";
+       let alertMessage = "Hidden object not detected ";
       updateAlertMessage(alertMessage);
-      updateGSMStatus("Ready");
+      updateGSMStatus("not Ready");
       // Triggering media control based on the alert
       controlMedia(true);  // Pause media on alert
       setTimeout(() => {
