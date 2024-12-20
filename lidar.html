@@ -134,18 +134,11 @@
         let distance = Math.random() * lidarRadius;
         let x = 200 + distance * Math.cos(angle);
         let y = 200 + distance * Math.sin(angle);
-        lidarCtx.fillStyle = "#ff0000";
-        lidarCtx.fillRect(x - 5, y - 5, 10, 10);
-
-        // Simulated LiDAR object data
-        const lidarDistance = distance.toFixed(2);
-        const lidarSpeed = (Math.random() * 2).toFixed(2); // Random speed for demo
-
-        document.getElementById('lidar-distance').innerText = `LiDAR Detected Object Distance: ${lidarDistance} meters`;
-        document.getElementById('lidar-speed').innerText = `LiDAR Detected Object Speed: ${lidarSpeed} m/s`;
+        
+      
       }
 
-      lidarAngle += rotationIncrement; // Rotate ray angle
+     
     }
 
     // Function to draw Radar Map
@@ -168,18 +161,14 @@
         let distance = Math.random() * radarRadius;
         let x = 200 + distance * Math.cos(angle);
         let y = 200 + distance * Math.sin(angle);
-        radarCtx.fillStyle = "#00ff00";
-        radarCtx.fillRect(x - 5, y - 5, 10, 10);
+       
 
-        // Simulated Radar object data
-        const radarDistance = distance.toFixed(2);
-        const radarSpeed = (Math.random() * 2).toFixed(2); // Random speed for demo
+        
 
-        document.getElementById('radar-distance').innerText = `Radar Detected Object Distance: ${radarDistance} meters`;
-        document.getElementById('radar-speed').innerText = `Radar Detected Object Speed: ${radarSpeed} m/s`;
+      
       }
 
-      radarAngle += rotationIncrement; // Rotate ray angle
+     
     }
 
     // Call functions to draw LiDAR and Radar Maps
